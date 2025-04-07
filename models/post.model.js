@@ -4,6 +4,11 @@ const postSchema = new Schema(
     title: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: Schema.Types.ObjectId, ref: "user", required: true },
+    likes: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    dislikes: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    totalLikes: { type: Number, default: 0 },
+    totalDislikes: { type: Number, default: 0 },
+    status: { type: String, enum: ["draft", "published"], default: "draft" },
   },
   { timestamps: true }
 );
