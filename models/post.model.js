@@ -9,6 +9,8 @@ const postSchema = new Schema(
     totalLikes: { type: Number, default: 0 },
     totalDislikes: { type: Number, default: 0 },
     status: { type: String, enum: ["draft", "published"], default: "draft" },
+    category:{type: Schema.Types.ObjectId,ref:"category"},
+    tags:[{type:String}]
   },
   { timestamps: true }
 );

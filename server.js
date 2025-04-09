@@ -6,6 +6,7 @@ const postRoutes = require("./routes/post.route");
 const commentRoute = require("./routes/comment.route");
 const userProfileRoute = require("./routes/profile.route");
 const adminRoutes = require("./routes/admin.route");
+const categoryRoutes = require("./routes/category.route");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ app.use("/api", postRoutes);
 app.use("/api", commentRoute);
 app.use("/api/profile", userProfileRoute);
 app.use("/api/admin", adminRoutes);
+app.use("/api/category", categoryRoutes);
 app.listen(port, () => {
   console.log(`server is running at http://localhost:${port}`);
 });

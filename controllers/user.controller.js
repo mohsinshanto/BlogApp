@@ -39,5 +39,18 @@ const userLogin = async (req, res) => {
     res.status(500).json({ msg: "Server error. Please try again later." });
   }
 };
+const makeAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(400).json({ msg: "User hasn't found!!" });
+    }
+    user.isAdmin = true;
+    await user.save();
+    res.status(200).json({ msg: "User Promoted to admin", user });
+  } catch (error) {
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
 
-module.exports = { saveUser, userLogin };
+module.exports = { saveUser, userLogin,makeAdmin };
