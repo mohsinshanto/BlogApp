@@ -11,6 +11,8 @@ const {
   dislikesOfPost,
   publishPost,
   getMyDrafts,
+  getPostByCategory,
+  getPostByTag
 } = require("../controllers/post.controller");
 const router = express.Router();
 // Creating post
@@ -31,5 +33,9 @@ router.post("/post/:postId/like", authMiddleware, likesOfPost);
 router.post("/post/:postId/dislike", authMiddleware, dislikesOfPost);
 // post publishement
 router.put("/post/:postId/publish", authMiddleware, publishPost);
+// filtering post by category
+router.get("/post/category/:categoryId", getPostByCategory);
+// filtering post by tag
+router.get("/post/tag/:tag", getPostByTag);
 
 module.exports = router;

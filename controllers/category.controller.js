@@ -19,7 +19,7 @@ const createCategory = async (req, res) => {
 const getAllCategory = async (req, res) => {
   try {
     const categories = await Category.find();
-    if (!categories) {
+    if (!categories||categories.length===0) {
       return res.status(400).json({ msg: "There is no category to fetch" });
     }
     res.status(200).json(categories);

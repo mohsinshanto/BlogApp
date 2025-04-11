@@ -1,7 +1,7 @@
 const Post = require("../models/post.model");
 // creating post
 const createPost = async (req, res) => {
-  const { title, content, status } = req.body;
+  const { title, content, status, tags, category } = req.body;
   const { id } = req.user;
   if (!title || !content) {
     return res
@@ -14,6 +14,8 @@ const createPost = async (req, res) => {
       content,
       author: id,
       status: status || "draft",
+      tags,
+      category,
     });
     await newPost.save();
     res.status(201).json({ msg: "New post created" });
@@ -120,7 +122,9 @@ const likesOfPost = async (req, res) => {
       return res.status(404).json({ msg: "post not found" });
     }
     if (post.dislikes.map((dislike) => dislike.toString()).includes(id)) {
-      post.dislikes = post.dislikes.filter((element) => element.toString() !== id);
+      post.dislikes = post.dislikes.filter(
+        (element) => element.toString() !== id
+      );
       post.totalDislikes -= 1;
     }
     if (post.likes.map((like) => like.toString()).includes(id)) {
@@ -143,11 +147,11 @@ const dislikesOfPost = async (req, res) => {
     if (!post) {
       return res.status(400).json({ msg: "Post hasn't found" });
     }
-    if (post.likes.map(like=>like.toString()).includes(id)) {
+    if (post.likes.map((like) => like.toString()).includes(id)) {
       post.likes = post.likes.filter((element) => element.toString() !== id);
       post.totalLikes -= 1;
     }
-    if (post.dislikes.map(dislike=>dislike.toString()).includes(id)) {
+    if (post.dislikes.map((dislike) => dislike.toString()).includes(id)) {
       return res
         .status(400)
         .json({ msg: "You have already unliked this post" });
@@ -179,6 +183,41 @@ const publishPost = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+// Filtering post by category
+const getPostByCategory = async (req, res) => {
+  const { categoryId } = req.params;
+  try {
+    const posts = await Post.find({ category: categoryId })
+      .populate("author", "username")
+      .populate("category", "name");
+    if (posts.length === 0) {
+      return res
+        .status(400)
+        .json({ msg: "No post available related to this category" });
+    }
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+// Filtering post by tag
+const getPostByTag = async (req, res) => {
+  const { tag } = req.params;
+  try {
+    const posts = await Post.find({ tags: tag })
+      .populate("author", "username")
+      .populate("category", "name");
+    if (posts.length === 0) {
+      return res
+        .status(400)
+        .json({ msg: "No post available related to this tag" });
+    }
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   createPost,
   singularPost,
@@ -190,4 +229,6 @@ module.exports = {
   dislikesOfPost,
   publishPost,
   getMyDrafts,
+  getPostByCategory,
+  getPostByTag
 };
