@@ -86,15 +86,27 @@ const singularPost = async (req, res) => {
 // get All posts
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find({ status: "published" }).populate(
-      "author",
-      "username"
-    );
-    console.log(posts);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+    const totalPosts = await Post.countDocuments({ status: "published" });
+    const posts = await Post.find({ status: "published" })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("author", "username")
+      .populate("category", "name");
     if (posts.length === 0) {
       return res.status(200).json([]);
     }
-    res.status(200).json(posts);
+    res
+      .status(200)
+      .json({
+        totalPosts,
+        totalPage: Math.ceil(totalPosts / limit),
+        currentPage: page,
+        posts,
+      });
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });
   }
@@ -230,5 +242,5 @@ module.exports = {
   publishPost,
   getMyDrafts,
   getPostByCategory,
-  getPostByTag
+  getPostByTag,
 };

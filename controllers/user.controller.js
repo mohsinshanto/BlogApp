@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { authMiddleware } = require("../middleware/authMiddle");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
@@ -52,5 +53,30 @@ const makeAdmin = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
-
-module.exports = { saveUser, userLogin,makeAdmin };
+const bookMarkPosts = async (req, res) => {
+  const { postId } = req.params;
+  const { id } = req.user;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    const alreadyBookmarked = user.bookmarkedPosts.some(
+      (id) => id.toString() === postId
+    );
+    if (alreadyBookmarked) {
+      user.bookmarkedPosts = user.bookmarkedPosts.filter(
+        (id) => id.toString() !== postId
+      );
+      await user.save();
+      return res.status(200).json({ msg: "Post removed from bookMarks" });
+    } else {
+      user.bookmarkedPosts.push(postId);
+      await user.save();
+      return res.status(200).json({ msg: "Post bookmarked" });
+    }
+  } catch (error) {
+    res.status(500).json({ msg: "Internal Server Error!!" });
+  }
+};
+module.exports = { saveUser, userLogin, makeAdmin, bookMarkPosts };

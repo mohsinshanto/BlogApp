@@ -12,7 +12,7 @@ const {
   publishPost,
   getMyDrafts,
   getPostByCategory,
-  getPostByTag
+  getPostByTag,
 } = require("../controllers/post.controller");
 const router = express.Router();
 // Creating post
