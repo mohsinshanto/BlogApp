@@ -79,4 +79,31 @@ const bookMarkPosts = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error!!" });
   }
 };
-module.exports = { saveUser, userLogin, makeAdmin, bookMarkPosts };
+const getBookmarkedPosts = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId).populate({
+      path: "bookmarkedPosts",
+      select: "title content author category createdAt",
+      populate: [
+        { path: "author", select: "username" },
+        { path: "category", select: "name" },
+      ],
+    });
+
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    res.status(200).json(user.bookmarkedPosts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Server Error" });
+  }
+};
+module.exports = {
+  saveUser,
+  userLogin,
+  makeAdmin,
+  bookMarkPosts,
+  getBookmarkedPosts,
+};
