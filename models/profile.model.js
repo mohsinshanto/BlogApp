@@ -16,7 +16,7 @@ const profileSchema = new Schema({
   },
   avatar: {
     type: String,
-    default: "/public/images/boy.jpg",
+    default: "/public/avatars/boy.jpg",
   },
   socialLinks: {
     twitter: { type: String },

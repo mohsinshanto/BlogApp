@@ -74,9 +74,15 @@ const deletePost = async (req, res) => {
 const singularPost = async (req, res) => {
   const postId = req.params.postId;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { views: 1 } },
+      { new: true }
+    )
+      .populate("author", "username")
+      .populate("category", "name");
     if (!post) {
-      res.status(404).json({ msg: "Post not found!" });
+      return res.status(404).json({ msg: "Post not found!" });
     }
     res.status(200).json(post);
   } catch (error) {
@@ -99,14 +105,12 @@ const getAllPosts = async (req, res) => {
     if (posts.length === 0) {
       return res.status(200).json([]);
     }
-    res
-      .status(200)
-      .json({
-        totalPosts,
-        totalPage: Math.ceil(totalPosts / limit),
-        currentPage: page,
-        posts,
-      });
+    res.status(200).json({
+      totalPosts,
+      totalPage: Math.ceil(totalPosts / limit),
+      currentPage: page,
+      posts,
+    });
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });
   }

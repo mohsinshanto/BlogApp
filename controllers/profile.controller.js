@@ -56,5 +56,27 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+const uploadAvatar = async (req, res) => {
+  const userId = req.user.id;
 
-module.exports = { createProfile, getProfile, updateProfile };
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  try {
+    const profile = await Profile.findOne({ user: userId });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    profile.avatar = `/public/avatars/${req.file.filename}`;
+    await profile.save();
+
+    res.status(200).json({ message: "Avatar updated", avatar: profile.avatar });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { createProfile, getProfile, updateProfile, uploadAvatar };

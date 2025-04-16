@@ -11,6 +11,7 @@ const postSchema = new Schema(
     status: { type: String, enum: ["draft", "published"], default: "draft" },
     category: { type: Schema.Types.ObjectId, ref: "category" },
     tags: [{ type: String }],
+    views: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
